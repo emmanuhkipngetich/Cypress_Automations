@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
-                git branch: 'main', url: 'ttps://github.com/emmanuhkipngetich/Cypress_Automations.git'
+                git branch: 'main', url: 'https://github.com/emmanuhkipngetich/Cypress_Automations.git'
             }
         }
         stage('Build') {
