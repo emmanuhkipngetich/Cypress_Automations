@@ -5,9 +5,7 @@ pipeline {
         CI = 'true'  // Set Continuous Integration mode for Cypress
     }
 
-    tools {
-        nodejs 'NodeJS'  // Ensure Node.js is installed in Jenkins
-    }
+    
 
     stages {
         stage('Checkout Code') {
