@@ -1,25 +1,61 @@
 pipeline {
     agent any
+
+    environment {
+        CI = 'true'  // Set Continuous Integration mode for Cypress
+    }
+
+    tools {
+        nodejs 'NodeJS'  // Ensure Node.js is installed in Jenkins
+    }
+
     stages {
-        stage('Clone Repo') {
+        stage('Checkout Code') {
             steps {
                 git branch: 'main', url: 'https://github.com/emmanuhkipngetich/Cypress_Automations.git'
             }
         }
-        stage('Build') {
+
+        stage('Install Dependencies') {
             steps {
-                sh 'echo "Building the project..."'
+                script {
+                    sh 'npm install'  // Install Cypress & project dependencies
+                }
             }
         }
-        stage('Test') {
+
+        stage('Run Cypress Tests') {
             steps {
-                sh 'echo "Running tests..."'
+                script {
+                    sh 'npx cypress run'  // Run Cypress headless tests
+                }
             }
         }
-        stage('Deploy') {
+
+        stage('Publish Test Reports') {
             steps {
-                sh 'echo "Deploying application..."'
+                publishHTML(target: [
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: false,
+                    keepAll: true,
+                    reportDir: 'cypress/reports/html',
+                    reportFiles: 'index.html',
+                    reportName: 'Cypress Test Report'
+                ])
             }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'cypress/screenshots/**, cypress/videos/**', fingerprint: true
+            junit 'cypress/results/*.xml'  // Store test results
+        }
+        success {
+            echo '🎉 Cypress tests passed successfully!'
+        }
+        failure {
+            echo '❌ Cypress tests failed. Check reports!'
         }
     }
 }
